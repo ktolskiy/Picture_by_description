@@ -21,6 +21,7 @@ root.wait_visibility()
 # for description and pictures count
 description_var = tk.StringVar()
 count_var = tk.StringVar()
+var = tk.IntVar()
 
 def submit():
     global description
@@ -29,6 +30,13 @@ def submit():
     description=description_var.get()
     count= count_var.get()
     root.quit()
+
+def on_button_toggle():
+    global serchSubfolders
+    if var.get() == 1:
+        serchSubfolders = True
+    else:
+        serchSubfolders = False
     
 
 def add_image_scores(scores, directory, description):
@@ -67,6 +75,12 @@ count_label = tk.Label(root, text = 'How many pictures to show', font = ('calibr
  
 # creating a entry for the returned pictures count
 count_entry=tk.Entry(root, textvariable = count_var, font = ('calibre',12,'normal'))
+
+# Creating a Checkbutton
+var = tk.IntVar()
+checkbutton = tk.Checkbutton(root, text="Search Subdirectories", variable=var, 
+                             onvalue=1, offvalue=0, command=on_button_toggle)
+
  
 # creating a button using the widget 
 # Button that will call the submit function 
@@ -79,7 +93,8 @@ descr_label.grid(row=0,column=0)
 descr_entry.grid(row=0,column=1)
 count_label.grid(row=1,column=0)
 count_entry.grid(row=1,column=1)
-sub_btn.grid(row=2,column=1)
+checkbutton .grid(row=2,column=0)
+sub_btn.grid(row=3,column=1)
 # performing an infinite loop 
 # for the window to display
 root.mainloop()
