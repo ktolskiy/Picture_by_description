@@ -11,6 +11,25 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 processor = BridgeTowerProcessor.from_pretrained("BridgeTower/bridgetower-large-itm-mlm")
 model = BridgeTowerForImageAndTextRetrieval.from_pretrained("BridgeTower/bridgetower-large-itm-mlm").to(device)
 
+serchSubfolders = False
+description =""
+count =3
+
+root=tk.Tk()
+root.wait_visibility()
+# declaring string variable
+# for description and pictures count
+description_var = tk.StringVar()
+count_var = tk.StringVar()
+
+def submit():
+    global description
+    global count
+    global root
+    description=description_var.get()
+    count= count_var.get()
+    root.quit()
+    
 
 def add_image_scores(scores, directory, description):
     for filename in os.listdir(directory):
@@ -28,18 +47,50 @@ def add_image_scores(scores, directory, description):
             except Exception:
                 print("Can not open ", f)
                 continue
-        #elif os.path.isdir(f):
-            #add_image_scores(scores, f, description) 
+        elif os.path.isdir(f) and serchSubfolders:
+            add_image_scores(scores, f, description) 
     return   
 
 
 folder_name = filedialog.askdirectory(title="Select a Directory")
-description ="men wearing a helmet"
+
+# creating a label for 
+# request using widget Label
+descr_label = tk.Label(root, text = 'Image description', font=('calibre',12, 'bold'))
+ 
+# creating a entry for input
+# request using widget Entry
+descr_entry = tk.Entry(root,textvariable = description_var, font=('calibre',12,'normal'))
+ 
+# creating a label for the returned pictures count
+count_label = tk.Label(root, text = 'How many pictures to show', font = ('calibre',12,'bold'))
+ 
+# creating a entry for the returned pictures count
+count_entry=tk.Entry(root, textvariable = count_var, font = ('calibre',12,'normal'))
+ 
+# creating a button using the widget 
+# Button that will call the submit function 
+sub_btn=tk.Button(root,text = 'Submit', command = submit)
+ 
+# placing the label and entry in
+# the required position using grid
+# method
+descr_label.grid(row=0,column=0)
+descr_entry.grid(row=0,column=1)
+count_label.grid(row=1,column=0)
+count_entry.grid(row=1,column=1)
+sub_btn.grid(row=2,column=1)
+# performing an infinite loop 
+# for the window to display
+root.mainloop()
+
 scores = dict()
 add_image_scores(scores, folder_name, description)
 myKeys = list(scores.keys())
 myKeys.sort()
+m = min(int(count), len(myKeys))
 
-for i in range(3):
+for i in range(m):
     Image.open(scores[myKeys[i]]).show()
     print(scores[myKeys[i]], myKeys[i])
+
